@@ -1,0 +1,26 @@
+{
+  "name": "electron-uses",
+  "version": "1.0.0",
+  "description": "## Good Use Cases",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pearpages/electron-uses.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pearpages/electron-uses/issues"
+  },
+  "homepage": "https://github.com/pearpages/electron-uses#readme",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "electron": "^1.6.6"
+  }
+}
