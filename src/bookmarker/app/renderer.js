@@ -1,4 +1,4 @@
-const newLinkUrl = document.querySelector('#new-link-url');
+const newLinkUrl = document.querySelector('#new-link-url'); // Returns the first Element within the document that matches the specified selector, or group of selectors.
 newLinkUrl.value = 'https://pearpages.com';
 const newLinkSubmit = document.querySelector('.new-link-form--submit');
 newLinkSubmit.disabled = false;
