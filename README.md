@@ -2,6 +2,10 @@
 
 Inherently offline first.
 
+## Docs
+
+[Docs](https://electron.atom.io)
+
 ## Good Use Cases
 
 + You want to build an application that has advanced permissions like accessing the file system.

@@ -14,4 +14,6 @@ app.on('ready', function () {
     });
     mainWindow.loadURL(`file://${__dirname}/index.html`); // 800 x 600 by default
 
+    require('devtron').install();
+
 });

@@ -1,9 +1,11 @@
+const { shell } = require('electron');
 const parser = new DOMParser();
 
 const newLinkUrl = handleNewLinksUrl();
-handleForm(newLinkUrl, parser);
+const linksSection = getLinksSection(shell);
+handleForm(newLinkUrl, linksSection, parser);
 
-function handleForm(newLinkUrl, parser) {
+function handleForm(newLinkUrl, linksSection, parser) {
     const form = document.querySelector('.new-link-form');
     form.addEventListener('submit', handleSubmit);
 
@@ -16,8 +18,8 @@ function handleForm(newLinkUrl, parser) {
         urlElement.href = url;
         urlElement.textContent = url;
 
-        const linksSection = document.querySelector('.links');
         linksSection.appendChild(newLink);
+
         return { title, url };
     }
 
@@ -43,10 +45,25 @@ function handleForm(newLinkUrl, parser) {
             })
             .then(title => ({ title, url }))
             .then(addToPage)
-            .then(title => console.log(title))
             .catch(function showError(error) {
                 console.error(error);
             })
+    }
+}
+
+function getLinksSection(shell) {
+    const linksSection = document.querySelector('.links');
+    linksSection.addEventListener('click', handleClick);
+    return linksSection;
+
+    function handleClick(event) {
+        if (event.target.href) {
+            event.preventDefault();
+            const target = event.target.href;
+            if (target) {
+                shell.openExternal(target);
+            }
+        }
     }
 }
 
