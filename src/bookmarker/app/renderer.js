@@ -1,4 +1,5 @@
-const { shell } = require('electron');
+const { shell,remote } = require('electron');
+const systemPreferences = remote.systemPreferences; // not used in the code, example of how to access system preferences
 const parser = new DOMParser();
 
 const newLinkUrl = handleNewLinksUrl();
