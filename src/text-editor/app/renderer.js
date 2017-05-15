@@ -8,7 +8,7 @@ init();
 function init() {
     const htmlView = document.querySelector("#html");
     const renderer = renderMarkdownToHtml(marked, htmlView);
-    const markdownView = getMarkdownView(htmlView,renderer,"#markdown");
+    const markdownView = getMarkdownView(htmlView,renderer,"#markdown",currentWindow);
     const newFileButton = getNewFileButton('#new-file',createWindow);
     const openFileButton = getOpenFileButton(currentWindow);
     const saveMarkdownButton = document.querySelector("#save-markdown");
@@ -42,9 +42,10 @@ function renderMarkdownToHtml(marked, htmlContainer) {
     };
 }
 
-function getMarkdownView(htmlView,renderer,id) {
+function getMarkdownView(htmlView,renderer,id,win) {
     const markdownView = document.querySelector(id);
     markdownView.addEventListener('keyup', renderer);
+    win.setDocumentEdited(true);
     return markdownView;
 }
 

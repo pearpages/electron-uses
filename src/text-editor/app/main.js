@@ -43,4 +43,6 @@ function openFile(targetWindow, filePath, d = dialog) {
     const file = filePath || getFileFromUserSelection(d, targetWindow);
     const content = fs.readFileSync(file).toString();
     targetWindow.webContents.send('file-opened', file, content);
+    targetWindow.setTitle(`${file}`); // window title
+    targetWindow.setRepresentedFilename(file); // right click button extra functionality
 }
