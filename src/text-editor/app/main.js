@@ -3,13 +3,16 @@ const fs = require('fs');
 
 const windows = new Set();
 
+exports.createWindow = createWindow;
+exports.openFile = openFile;
+
 app.on('ready', function doTheMagic() {
     createWindow(windows);
 });
 
-function createWindow(windows) {
+function createWindow(w = windows) {
     const newWindow = new BrowserWindow({ show: false });
-    windows.add(newWindow);
+    w.add(newWindow);
 
     newWindow.loadURL(`file://${__dirname}/index.html`);
 
@@ -18,8 +21,7 @@ function createWindow(windows) {
     });
 
     newWindow.on('closed', function removeWindow() {
-        windows.delete(newWindow);
-        newWindow = null;
+        w.delete(newWindow);
     });
 }
 
@@ -37,7 +39,7 @@ function getFileFromUserSelection(d, mWindow) {
     return files[0];
 }
 
-exports.openFile = function openFile(targetWindow, filePath, d = dialog) {
+function openFile(targetWindow, filePath, d = dialog) {
     const file = filePath || getFileFromUserSelection(d, targetWindow);
     const content = fs.readFileSync(file).toString();
     targetWindow.webContents.send('file-opened', file, content);
