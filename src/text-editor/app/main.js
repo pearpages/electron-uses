@@ -1,7 +1,7 @@
 const { app, BrowserWindow, dialog } = require('electron');
 const fs = require('fs');
 
-const windows = new Set();
+const windows = new Set(); // @learn
 
 exports.createWindow = createWindow;
 exports.openFile = openFile;
@@ -10,13 +10,19 @@ app.on('ready', function doTheMagic() {
     createWindow(windows);
 });
 
-function createWindow(w = windows,aDialog = dialog) {
+app.on('will-finish-launching', () => {
+    app.on('open-file',  (event, filePath) => {createWindow(windows,dialog,filePath)})
+});
+
+function createWindow(w = windows,aDialog,file) {
+    aDialog = aDialog || dialog;
     const newWindow = new BrowserWindow({ show: false });
     w.add(newWindow);
 
     newWindow.loadURL(`file://${__dirname}/index.html`);
 
     newWindow.once('ready-to-show', function showWindow() {
+        if (file) openFile(newWindow,file);
         newWindow.show();
     });
 
@@ -67,7 +73,10 @@ function getFileFromUserSelection(d, mWindow) {
 function openFile(targetWindow, filePath, d = dialog) {
     const file = filePath || getFileFromUserSelection(d, targetWindow);
     const content = fs.readFileSync(file).toString();
+
+    app.addRecentDocument(file); // @learn
+
     targetWindow.webContents.send('file-opened', file, content);
     targetWindow.setTitle(`${file}`); // window title
-    targetWindow.setRepresentedFilename(file); // right click button extra functionality
+    targetWindow.setRepresentedFilename(file); // @learn : right click button extra functionality
 }

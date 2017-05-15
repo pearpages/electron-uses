@@ -1,5 +1,5 @@
-const marked = require('marked'); // turns markdown to html
-const { remote, ipcRenderer } = require('electron'); // ipcRenderer: connect to main.js
+const marked = require('marked'); // @learn : turns markdown to html
+const { remote, ipcRenderer } = require('electron'); // @learn : ipcRenderer: connect to main.js
 const { openFile, createWindow } = remote.require('./main');
 const currentWindow = remote.getCurrentWindow();
 
