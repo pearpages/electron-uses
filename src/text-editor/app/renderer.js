@@ -1,6 +1,6 @@
 const marked = require('marked'); // @learn : turns markdown to html
 const { remote, ipcRenderer } = require('electron'); // @learn : ipcRenderer: connect to main.js
-const { openFile, createWindow } = remote.require('./main');
+const { openFile, createWindow, saveMarkdown } = remote.require('./main');
 const currentWindow = remote.getCurrentWindow();
 
 let filePath = null;
@@ -11,11 +11,21 @@ const renderer = renderMarkdownToHtml(marked, htmlView, currentWindow);
 const markdownView = getMarkdownView(htmlView, renderer, "#markdown", currentWindow);
 const newFileButton = getNewFileButton('#new-file', createWindow);
 const openFileButton = getOpenFileButton(currentWindow);
-const saveMarkdownButton = document.querySelector("#save-markdown");
+const saveMarkdownButton = getSaveButton('#save-markdown');
 const revertButton = document.querySelector("#revert");
 const saveHtmlButton = document.querySelector("#save-html");
 
 ipcRenderer.on('file-opened', handleFileOpened(markdownView, renderer));
+
+function getSaveButton(id) {
+    const saveButton = document.querySelector(id);
+    saveButton.addEventListener('click', handleClick);
+    return saveButton;
+
+    function handleClick(event) {
+        saveMarkdown(currentWindow,filePath,markdownView.value);
+    }
+}
 
 
 function getNewFileButton(id, newWindowHandler) {

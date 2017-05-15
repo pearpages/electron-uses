@@ -3,18 +3,24 @@ const fs = require('fs');
 
 const windows = new Set(); // @learn
 
+const filters = [
+    { name: 'Text files', extensions: ['txt', 'text'] },
+    { name: 'Markdown files', extensions: ['markdown', 'md'] }
+];
+
 exports.createWindow = createWindow;
 exports.openFile = openFile;
+exports.saveMarkdown = saveMarkdown;
 
 app.on('ready', function doTheMagic() {
     createWindow(windows);
 });
 
 app.on('will-finish-launching', () => {
-    app.on('open-file',  (event, filePath) => {createWindow(windows,dialog,filePath)})
+    app.on('open-file', (event, filePath) => { createWindow(windows, dialog, filePath) })
 });
 
-function createWindow(w = windows,aDialog,file) {
+function createWindow(w = windows, aDialog, file) {
     aDialog = aDialog || dialog;
     const newWindow = new BrowserWindow({ show: false });
     w.add(newWindow);
@@ -22,20 +28,36 @@ function createWindow(w = windows,aDialog,file) {
     newWindow.loadURL(`file://${__dirname}/index.html`);
 
     newWindow.once('ready-to-show', function showWindow() {
-        if (file) openFile(newWindow,file);
+        if (file) openFile(newWindow, file);
         newWindow.show();
     });
 
-    newWindow.on('close',handleWhenClosing(newWindow,aDialog));
+    newWindow.on('close', handleWhenClosing(newWindow, aDialog));
 
     newWindow.on('closed', function removeWindow() {
         w.delete(newWindow);
     });
 }
 
+function saveMarkdown(targetWindow, file, content, dial = dialog) {
+
+    if (!file) {
+        file = dial.showSaveDialog(targetWindow, {
+            title: 'Save Markdown',
+            defaultPath: app.getPath('documents'),
+            filters: filters
+        })
+    }
+
+    if(!file) return;
+
+    fs.writeFileSync(file,content);
+    targetWindow.webContents.send('file-opened',file,content);
+}
+
 function handleWhenClosing(window, cDialog) {
-    return function closing (event) {
-        if(window.isDocumentEdited()) {
+    return function closing(event) {
+        if (window.isDocumentEdited()) {
             event.preventDefault();
             const result = cDialog.showMessageBox(window, {
                 type: 'warning',
@@ -49,7 +71,7 @@ function handleWhenClosing(window, cDialog) {
                 cancelId: 1
             });
 
-            if(result === 0) {
+            if (result === 0) {
                 window.destroy();
             }
         }
@@ -59,10 +81,7 @@ function handleWhenClosing(window, cDialog) {
 function getFileFromUserSelection(d, mWindow) {
     const files = d.showOpenDialog(mWindow, {
         properties: ['openFile'], // pick onley one file
-        filters: [
-            { name: 'Text files', extensions: ['txt', 'text'] },
-            { name: 'Markdown files', extensions: ['markdown', 'md'] }
-        ]
+        filters: filters
     });
 
     if (!files) return;
