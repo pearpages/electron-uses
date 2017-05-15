@@ -2,14 +2,17 @@
   "name": "text-editor",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./app/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ./app/main.js"
+    "start": "electron ./app/main.js",
+    "build": "./node_modules/.bin/electron-packager . \"Markdown Editor\" --out=\"dist\" --icon=\"editor.icns\" --overwrite --verbose"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "electron": "^1.6.7",
+    "electron-packager": "^8.7.0",
     "marked": "^0.3.6"
   }
 }
