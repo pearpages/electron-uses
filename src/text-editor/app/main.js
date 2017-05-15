@@ -14,6 +14,7 @@ exports.openFile = openFile;
 exports.saveMarkdown = saveMarkdown;
 
 app.on('ready', function doTheMagic() {
+    require('./menu');
     createWindow(windows);
 });
 
