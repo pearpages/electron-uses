@@ -20,7 +20,6 @@ function createWindow(w = windows,aDialog = dialog) {
         newWindow.show();
     });
 
-    console.log(newWindow);
     newWindow.on('close',handleWhenClosing(newWindow,aDialog));
 
     newWindow.on('closed', function removeWindow() {

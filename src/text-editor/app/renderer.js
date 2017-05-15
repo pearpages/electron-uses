@@ -31,6 +31,14 @@ function getNewFileButton(id,newWindowHandler) {
     }
 }
 
+function updateEditedState (isEdited) {
+    currentWindow.setDocumentEdited(isEdited);
+    let title = 'file';
+    if (filePath) title = `${filePath} - ${title}`;
+    if (isEdited) title += ' (Edited)';
+    currentWindow.setTitle(title);
+}
+
 function handleFileOpened(markdownView,renderer) {
     return function fileOpenedHandler(event,file,content) {
         markdownView.value = content;
@@ -44,7 +52,7 @@ function renderMarkdownToHtml(marked, htmlContainer,win) {
     return (event,file,content) => {
         const value = (event.target) ? event.target.value : content;
         htmlContainer.innerHTML = marked(value, { sanitize: true })
-        win.setDocumentEdited(value !== originalContent);
+        updateEditedState(value !== originalContent);
     };
 }
 
