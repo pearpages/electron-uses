@@ -1,5 +1,5 @@
 const marked = require('marked'); // @learn : turns markdown to html
-const { remote, ipcRenderer } = require('electron'); // @learn : ipcRenderer: connect to main.js
+const { remote, ipcRenderer, shell } = require('electron'); // @learn : ipcRenderer: connect to main.js
 const { openFile, createWindow, saveMarkdown } = remote.require('./main');
 const currentWindow = remote.getCurrentWindow();
 
@@ -10,13 +10,35 @@ const htmlView = document.querySelector("#html");
 const renderer = renderMarkdownToHtml(marked, htmlView, currentWindow);
 const markdownView = getMarkdownView(htmlView, renderer, "#markdown", currentWindow);
 const newFileButton = getNewFileButton('#new-file', createWindow);
-const openFileButton = getOpenFileButton(currentWindow);
+const openFileButton = getOpenFileButton(currentWindow,"#open-file");
 const saveMarkdownButton = getSaveButton('#save-markdown');
 const revertButton = getRevertButton('#revert',renderer);
 const saveHtmlButton = document.querySelector("#save-html");
+const showFileButton = getShowFileButton("#show-file");
+const openInDefaultButton = getOpenInDefaultButton("#open-in-default");
 
 ipcRenderer.on('file-opened', handleFileOpened(markdownView, renderer));
 ipcRenderer.on('file-changed', handleFileOpened(markdownView, renderer));
+
+function getShowFileButton (id) {
+    const showFileButton = document.querySelector(id);
+    showFileButton.addEventListener('click',handleClick);
+    return showFileButton;
+
+    function handleClick(event) {
+        shell.showItemInFolder(filePath);
+    }
+}
+
+function getOpenInDefaultButton (id) {
+    const openInDefaultButton = document.querySelector(id);
+    openInDefaultButton.addEventListener('click',handleClick);
+    return openInDefaultButton;
+
+    function handleClick(event) {
+        shell.openItem(filePath);
+    }
+}
 
 function getRevertButton(id,renderer) {
     const revertButton = document.querySelector(id);
@@ -64,10 +86,15 @@ function updateEditedState(isEdited) {
 function handleFileOpened(markdownView, renderer) {
     return function fileOpenedHandler(event, file, content) {
         markdownView.value = content;
-        filePath = file;
+        setFilePath(file);
         originalContent = content;
         renderer(event, file, content);
     }
+}
+
+function setFilePath(file) {
+    filePath = file;
+    showFileButton.disabled = (file) ? false : true;
 }
 
 function renderMarkdownToHtml(marked, htmlContainer, win) {
@@ -84,8 +111,8 @@ function getMarkdownView(htmlView, renderer, id, win) {
     return markdownView;
 }
 
-function getOpenFileButton(window) {
-    const openFileButton = document.querySelector("#open-file");
+function getOpenFileButton(window,id) {
+    const openFileButton = document.querySelector(id);
     openFileButton.addEventListener('click', doOpenFile);
 
     function doOpenFile() {
