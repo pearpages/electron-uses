@@ -17,8 +17,8 @@ app.on('ready', function doTheMagic() {
     });
 });
 
-function getFileFromUserSelection(dialog) {
-    const files = dialog.showOpenDialog(mainWindow, {
+function getFileFromUserSelection(d, mWindow) {
+    const files = d.showOpenDialog(mWindow, {
         properties: ['openFile'], // pick onley one file
         filters: [
             {name: 'Text files', extensions: ['txt','text']},
@@ -28,6 +28,11 @@ function getFileFromUserSelection(dialog) {
 
     if(!files) return;
 
-    const file = files[0];
+    return files[0];
+}
+
+exports.openFile = function openFile(filePath, d = dialog, mWindow = mainWindow) {
+    const file = filePath || getFileFromUserSelection(d,mWindow);
     const content = fs.readFileSync(file).toString();
+    mWindow.webContents.send('file-opened', file, content);
 }
