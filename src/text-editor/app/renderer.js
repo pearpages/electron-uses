@@ -16,6 +16,7 @@ const revertButton = getRevertButton('#revert',renderer);
 const saveHtmlButton = document.querySelector("#save-html");
 
 ipcRenderer.on('file-opened', handleFileOpened(markdownView, renderer));
+ipcRenderer.on('file-changed', handleFileOpened(markdownView, renderer));
 
 function getRevertButton(id,renderer) {
     const revertButton = document.querySelector(id);

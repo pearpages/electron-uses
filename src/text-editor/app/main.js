@@ -1,5 +1,6 @@
 const { app, BrowserWindow, dialog } = require('electron');
 const fs = require('fs');
+const {startWatchingFile, stopWatchingFile} = require('./watchers');
 
 const windows = new Set(); // @learn
 
@@ -36,6 +37,7 @@ function createWindow(w = windows, aDialog, file) {
 
     newWindow.on('closed', function removeWindow() {
         w.delete(newWindow);
+        stopWatchingFile(newWindow);
     });
 }
 
@@ -94,6 +96,7 @@ function openFile(targetWindow, filePath, d = dialog) {
     const content = fs.readFileSync(file).toString();
 
     app.addRecentDocument(file); // @learn
+    startWatchingFile(targetWindow,file);
 
     targetWindow.webContents.send('file-opened', file, content);
     targetWindow.setTitle(`${file}`); // window title
