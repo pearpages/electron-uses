@@ -3,11 +3,14 @@ const { remote, ipcRenderer } = require('electron'); // ipcRenderer: connect to 
 const { openFile, createWindow } = remote.require('./main');
 const currentWindow = remote.getCurrentWindow();
 
+let filePath = null;
+let originalContent = '';
+
 init();
 
 function init() {
     const htmlView = document.querySelector("#html");
-    const renderer = renderMarkdownToHtml(marked, htmlView);
+    const renderer = renderMarkdownToHtml(marked, htmlView,currentWindow);
     const markdownView = getMarkdownView(htmlView,renderer,"#markdown",currentWindow);
     const newFileButton = getNewFileButton('#new-file',createWindow);
     const openFileButton = getOpenFileButton(currentWindow);
@@ -31,27 +34,28 @@ function getNewFileButton(id,newWindowHandler) {
 function handleFileOpened(markdownView,renderer) {
     return function fileOpenedHandler(event,file,content) {
         markdownView.value = content;
+        filePath = file;
+        originalContent = content;
         renderer(event,file,content);
     }
 }
 
-function renderMarkdownToHtml(marked, htmlContainer) {
+function renderMarkdownToHtml(marked, htmlContainer,win) {
     return (event,file,content) => {
         const value = (event.target) ? event.target.value : content;
         htmlContainer.innerHTML = marked(value, { sanitize: true })
+        win.setDocumentEdited(value !== originalContent);
     };
 }
 
 function getMarkdownView(htmlView,renderer,id,win) {
     const markdownView = document.querySelector(id);
     markdownView.addEventListener('keyup', renderer);
-    win.setDocumentEdited(true);
     return markdownView;
 }
 
 function getOpenFileButton(window) {
     const openFileButton = document.querySelector("#open-file");
-    debugger;
     openFileButton.addEventListener('click', doOpenFile);
 
     function doOpenFile() {
