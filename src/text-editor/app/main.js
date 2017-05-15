@@ -10,7 +10,7 @@ app.on('ready', function doTheMagic() {
     createWindow(windows);
 });
 
-function createWindow(w = windows) {
+function createWindow(w = windows,aDialog = dialog) {
     const newWindow = new BrowserWindow({ show: false });
     w.add(newWindow);
 
@@ -20,9 +20,35 @@ function createWindow(w = windows) {
         newWindow.show();
     });
 
+    console.log(newWindow);
+    newWindow.on('close',handleWhenClosing(newWindow,aDialog));
+
     newWindow.on('closed', function removeWindow() {
         w.delete(newWindow);
     });
+}
+
+function handleWhenClosing(window, cDialog) {
+    return function closing (event) {
+        if(window.isDocumentEdited()) {
+            event.preventDefault();
+            const result = cDialog.showMessageBox(window, {
+                type: 'warning',
+                title: 'Quit with Unsaved Changes?',
+                message: 'Your changes will be lost if you do not save first.',
+                buttons: [
+                    'Quit Anyway',
+                    'Cancel'
+                ],
+                defaultId: 0,
+                cancelId: 1
+            });
+
+            if(result === 0) {
+                window.destroy();
+            }
+        }
+    }
 }
 
 function getFileFromUserSelection(d, mWindow) {
