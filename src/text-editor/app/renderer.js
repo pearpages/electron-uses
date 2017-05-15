@@ -12,10 +12,21 @@ const markdownView = getMarkdownView(htmlView, renderer, "#markdown", currentWin
 const newFileButton = getNewFileButton('#new-file', createWindow);
 const openFileButton = getOpenFileButton(currentWindow);
 const saveMarkdownButton = getSaveButton('#save-markdown');
-const revertButton = document.querySelector("#revert");
+const revertButton = getRevertButton('#revert',renderer);
 const saveHtmlButton = document.querySelector("#save-html");
 
 ipcRenderer.on('file-opened', handleFileOpened(markdownView, renderer));
+
+function getRevertButton(id,renderer) {
+    const revertButton = document.querySelector(id);
+    revertButton.addEventListener('click',revert);
+
+    function revert(event) {
+        markdownView.value = originalContent;
+        renderer('whatever',filePath,originalContent);
+    }
+    return revertButton;
+}
 
 function getSaveButton(id) {
     const saveButton = document.querySelector(id);
